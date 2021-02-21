@@ -285,24 +285,39 @@ class HtmlView extends BaseHtmlView
 			$this->params->def('page_heading', Text::_('JGLOBAL_ARTICLES'));
 		}
 
-		$title = $this->params->get('page_title', '');
-
-		$id = (int) @$menu->query['id'];
-
-		// If the menu item does not concern this article
-		if ($menu && (!isset($menu->query['option']) || $menu->query['option'] !== 'com_content' || $menu->query['view'] !== 'article'
-			|| $id != $this->item->id))
+		if ($menu
+			&& $menu->component == 'com_content'
+			&& isset($menu->query['view'], $menu->query['id'])
+			&& $menu->query['view'] == 'article'
+			&& $menu->query['id'] == $this->item->id)
 		{
-			// If a browser page title is defined, use that, then fall back to the article title if set, then fall back to the page_title option
-			$title = $this->item->params->get('article_page_title', $this->item->title ?: $title);
+			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+			$title = $this->params->get('page_title', $menu->title);
+		}
+		else
+		{
+			$this->params->def('page_heading', $this->item->title);
+			$title = $this->item->params->get('article_page_title', $this->item->title);
+			$this->params->set('page_title', $title);
+		}
 
-			$path     = array(array('title' => $this->item->title, 'link' => ''));
+		if (empty($title))
+		{
+			$title =  $this->item->title;
+		}
+
+		$id = $menu->query['id'] ?? 0;
+
+		if ($menu && isset($menu->query['option'], $menu->query['view'])
+			&& $menu->query['option'] == 'com_content'
+			&& in_array($menu->query['view'], ['categories', 'category']))
+		{
+			$path     = [['title' => $this->item->title, 'link' => '']];
 			$category = Categories::getInstance('Content')->get($this->item->catid);
 
-			while ($category && (!isset($menu->query['option']) || $menu->query['option'] !== 'com_content' || $menu->query['view'] === 'article'
-				|| $id !== (int) $category->id) && (int) $category->id > 1)
+			while ($category->id != $id && $category->id > 1)
 			{
-				$path[]   = array('title' => $category->title, 'link' => RouteHelper::getCategoryRoute($category->id, $category->language));
+				$path[]   = ['title' => $category->title, 'link' => RouteHelper::getCategoryRoute($category->id, $category->language)];
 				$category = $category->getParent();
 			}
 
@@ -312,11 +327,6 @@ class HtmlView extends BaseHtmlView
 			{
 				$pathway->addItem($item['title'], $item['link']);
 			}
-		}
-
-		if (empty($title))
-		{
-			$title = $this->item->title;
 		}
 
 		$this->setDocumentTitle($title);
