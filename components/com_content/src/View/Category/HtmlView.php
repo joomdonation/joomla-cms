@@ -220,19 +220,21 @@ class HtmlView extends CategoryView
 	protected function prepareDocument()
 	{
 		parent::prepareDocument();
-		$menu = $this->menu;
-		$id = (int) @$menu->query['id'];
 
-		if ($menu && (!isset($menu->query['option']) || $menu->query['option'] !== 'com_content' || $menu->query['view'] === 'article'
-			|| $id != $this->category->id))
+		$menu = $this->menu;
+		$id   = $menu->query['id'] ?? 0;
+
+		if ($menu && isset($menu->query['option'], $menu->query['view'])
+			&& $menu->query['option'] == 'com_content'
+			&& in_array($menu->query['view'], ['categories', 'category'])
+			&& $id != $this->category->id)
 		{
-			$path = array(array('title' => $this->category->title, 'link' => ''));
+			$path     = [['title' => $this->category->title, 'link' => '']];
 			$category = $this->category->getParent();
 
-			while ((!isset($menu->query['option']) || $menu->query['option'] !== 'com_content' || $menu->query['view'] === 'article'
-				|| $id != $category->id) && $category->id > 1)
+			while ($category->id != $id && $category->id > 1)
 			{
-				$path[] = array('title' => $category->title, 'link' => RouteHelper::getCategoryRoute($category->id, $category->language));
+				$path[]   = ['title' => $category->title, 'link' => RouteHelper::getCategoryRoute($category->id, $category->language)];
 				$category = $category->getParent();
 			}
 
