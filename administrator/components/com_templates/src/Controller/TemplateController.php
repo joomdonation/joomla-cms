@@ -150,8 +150,9 @@ class TemplateController extends BaseController
 
 		$app = $this->app;
 		$this->input->set('installtype', 'folder');
-		$newName    = $this->input->get('new_name');
 		$newNameRaw = $this->input->get('new_name', null, 'string');
+		// Only accept alphanumeric and underscore for template name
+		$newName    = preg_replace('#[^a-zA-Z0-9_]#', '', $newNameRaw);
 		$templateID = $this->input->getInt('id', 0);
 		$file       = $this->input->get('file');
 
