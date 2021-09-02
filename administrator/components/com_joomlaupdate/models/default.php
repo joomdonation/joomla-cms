@@ -1577,7 +1577,7 @@ ENDDATA;
 	 *
 	 * @since 3.10.0
 	 */
-	public function fetchCompatibility($extensionID, $joomlaTargetVersion)
+	public function fetchCompatibility($extensionID, $extensionVersion, $joomlaTargetVersion)
 	{
 		$updateSites = $this->getUpdateSitesInfo($extensionID);
 
@@ -1594,7 +1594,7 @@ ENDDATA;
 
 				foreach ($updateFileUrls as $updateFileUrl)
 				{
-					$compatibleVersion = $this->checkCompatibility($updateFileUrl, $joomlaTargetVersion);
+					$compatibleVersion = $this->checkCompatibility($updateFileUrl, $extensionVersion, $joomlaTargetVersion);
 
 					if ($compatibleVersion)
 					{
@@ -1610,7 +1610,7 @@ ENDDATA;
 			}
 			else
 			{
-				$compatibleVersion = $this->checkCompatibility($updateSite['location'], $joomlaTargetVersion);
+				$compatibleVersion = $this->checkCompatibility($updateSite['location'], $extensionVersion, $joomlaTargetVersion);
 
 				if ($compatibleVersion)
 				{
@@ -1739,14 +1739,14 @@ ENDDATA;
 	 *
 	 * @since   3.10.0
 	 */
-	private function checkCompatibility($updateFileUrl, $joomlaTargetVersion)
+	private function checkCompatibility($updateFileUrl, $extensionVersion, $joomlaTargetVersion)
 	{
 		// Get the minimum stability information from com_installer
 		$minimumStability = JComponentHelper::getParams('com_installer')->get('minimum_stability', JUpdater::STABILITY_STABLE);
 
 		$update = new JUpdate;
 		$update->set('jversion.full', $joomlaTargetVersion);
-		$update->loadFromXML($updateFileUrl, $minimumStability);
+		$update->loadFromXML($updateFileUrl, $minimumStability, $extensionVersion);
 
 		$downloadUrl = $update->get('downloadurl');
 

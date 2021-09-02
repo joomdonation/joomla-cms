@@ -225,6 +225,14 @@ class Update extends \JObject
 	protected $minimum_stability = Updater::STABILITY_STABLE;
 
 	/**
+	 * The minimum version for updates to be taken into account
+	 *
+	 * @var    string
+	 * @since  __DEPLOY_VERSION__
+	 */
+	protected $minimum_version = '';
+
+	/**
 	 * Gets the reference to the current direct parent
 	 *
 	 * @return  object
@@ -417,7 +425,15 @@ class Update extends \JObject
 						$stabilityMatch = false;
 					}
 
-					if ($phpMatch && $stabilityMatch && $dbMatch)
+					// Check minimum version
+					$minVersionMatch = true;
+
+					if (!empty($this->minimum_version) && version_compare($this->currentUpdate->version->_data, $this->minimum_version, '<'))
+					{
+						$minVersionMatch = false;
+					}
+
+					if ($phpMatch && $stabilityMatch && $dbMatch && $minVersionMatch)
 					{
 						if (!isset($this->latest)
 							|| version_compare($this->currentUpdate->version->_data, $this->latest->version->_data, '>'))
@@ -499,12 +515,13 @@ class Update extends \JObject
 	 *
 	 * @param   string  $url               The URL.
 	 * @param   int     $minimumStability  The minimum stability required for updating the extension {@see Updater}
+	 * @param   string  $minimumVersion    The minimum extension version to look for updates; use empty string if no limit
 	 *
 	 * @return  boolean  True on success
 	 *
 	 * @since   1.7.0
 	 */
-	public function loadFromXml($url, $minimumStability = Updater::STABILITY_STABLE)
+	public function loadFromXml($url, $minimumStability = Updater::STABILITY_STABLE, $minimumVersion = '')
 	{
 		$version    = new Version;
 		$httpOption = new Registry;
@@ -529,6 +546,7 @@ class Update extends \JObject
 		}
 
 		$this->minimum_stability = $minimumStability;
+		$this->minimum_version   = $minimumVersion;
 
 		$this->xmlParser = xml_parser_create('');
 		xml_set_object($this->xmlParser, $this);
