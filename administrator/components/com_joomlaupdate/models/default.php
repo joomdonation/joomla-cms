@@ -1571,6 +1571,7 @@ ENDDATA;
 	 * Called by controller's fetchExtensionCompatibility, which is called via AJAX.
 	 *
 	 * @param   string  $extensionID          The ID of the checked extension
+	 * @param   string  $extensionVersion     The installed version of the checked extension
 	 * @param   string  $joomlaTargetVersion  Target version of Joomla
 	 *
 	 * @return object
@@ -1733,6 +1734,7 @@ ENDDATA;
 	 * Method to check non core extensions for compatibility.
 	 *
 	 * @param   string  $updateFileUrl        The items update XML url.
+	 * @param   string  $extensionVersion     The items installed version
 	 * @param   string  $joomlaTargetVersion  The Joomla! version to test against
 	 *
 	 * @return  mixed  An array of data items or false.
