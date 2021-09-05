@@ -1600,7 +1600,7 @@ ENDDATA;
 					if ($compatibleVersion)
 					{
 						// Return the compatible version
-						return (object) array('state' => 1, 'compatibleVersion' => $compatibleVersion->_data);
+						return (object) array('state' => 1, 'compatibleVersion' => $compatibleVersion);
 					}
 					else
 					{
@@ -1616,7 +1616,7 @@ ENDDATA;
 				if ($compatibleVersion)
 				{
 					// Return the compatible version
-					return (object) array('state' => 1, 'compatibleVersion' => $compatibleVersion->_data);
+					return (object) array('state' => 1, 'compatibleVersion' => $compatibleVersion);
 				}
 				else
 				{
@@ -1757,8 +1757,8 @@ ENDDATA;
 			return false;
 		}
 
-		$minVersion = $update->get('minCompatibleVersion');
-		$maxVersion = $update->get('version');
+		$minVersion = $update->get('minCompatibleVersion')->_data;
+		$maxVersion = $update->get('version')->_data;
 
 		return version_compare($maxVersion, $extensionVersion, '<') || version_compare($minVersion, $extensionVersion, '>')
 			? $maxVersion
