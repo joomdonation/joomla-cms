@@ -1737,7 +1737,7 @@ ENDDATA;
 	 * @param   string  $extensionVersion     The items installed version
 	 * @param   string  $joomlaTargetVersion  The Joomla! version to test against
 	 *
-	 * @return  mixed  An array of data items or false.
+	 * @return  mixed  A string with the compatible version or false if no compatible version found.
 	 *
 	 * @since   3.10.0
 	 */
@@ -1760,6 +1760,7 @@ ENDDATA;
 		$minVersion = $update->get('minCompatibleVersion')->_data;
 		$maxVersion = $update->get('version')->_data;
 
+		// Return the latest available update version if the currently installed version is not compatble
 		return version_compare($maxVersion, $extensionVersion, '<') || version_compare($minVersion, $extensionVersion, '>')
 			? $maxVersion
 			: $extensionVersion;
