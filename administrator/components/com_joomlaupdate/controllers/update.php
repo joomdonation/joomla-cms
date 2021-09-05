@@ -509,8 +509,8 @@ class JoomlaupdateControllerUpdate extends JControllerLegacy
 
 		/** @var JoomlaupdateModelDefault $model */
 		$model = $this->getModel('default');
-		$upgradeCompatibilityStatus = $model->fetchCompatibility($extensionID, $joomlaTargetVersion);
-		$currentCompatibilityStatus = $model->fetchCompatibility($extensionID, $joomlaCurrentVersion);
+		$upgradeCompatibilityStatus = $model->fetchCompatibility($extensionID, $extensionVersion, $joomlaTargetVersion);
+		$currentCompatibilityStatus = $model->fetchCompatibility($extensionID, $extensionVersion, $joomlaCurrentVersion);
 
 		$upgradeWarning = 0;
 	

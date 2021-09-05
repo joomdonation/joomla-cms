@@ -1571,13 +1571,14 @@ ENDDATA;
 	 * Called by controller's fetchExtensionCompatibility, which is called via AJAX.
 	 *
 	 * @param   string  $extensionID          The ID of the checked extension
+	 * @param   string  $extensionVersion     The installed version of the checked extension
 	 * @param   string  $joomlaTargetVersion  Target version of Joomla
 	 *
 	 * @return object
 	 *
 	 * @since 3.10.0
 	 */
-	public function fetchCompatibility($extensionID, $joomlaTargetVersion)
+	public function fetchCompatibility($extensionID, $extensionVersion, $joomlaTargetVersion)
 	{
 		$updateSites = $this->getUpdateSitesInfo($extensionID);
 
@@ -1594,7 +1595,7 @@ ENDDATA;
 
 				foreach ($updateFileUrls as $updateFileUrl)
 				{
-					$compatibleVersion = $this->checkCompatibility($updateFileUrl, $joomlaTargetVersion);
+					$compatibleVersion = $this->checkCompatibility($updateFileUrl, $extensionVersion, $joomlaTargetVersion);
 
 					if ($compatibleVersion)
 					{
@@ -1610,7 +1611,7 @@ ENDDATA;
 			}
 			else
 			{
-				$compatibleVersion = $this->checkCompatibility($updateSite['location'], $joomlaTargetVersion);
+				$compatibleVersion = $this->checkCompatibility($updateSite['location'], $extensionVersion, $joomlaTargetVersion);
 
 				if ($compatibleVersion)
 				{
@@ -1733,13 +1734,14 @@ ENDDATA;
 	 * Method to check non core extensions for compatibility.
 	 *
 	 * @param   string  $updateFileUrl        The items update XML url.
+	 * @param   string  $extensionVersion     The items installed version
 	 * @param   string  $joomlaTargetVersion  The Joomla! version to test against
 	 *
 	 * @return  mixed  An array of data items or false.
 	 *
 	 * @since   3.10.0
 	 */
-	private function checkCompatibility($updateFileUrl, $joomlaTargetVersion)
+	private function checkCompatibility($updateFileUrl, $extensionVersion, $joomlaTargetVersion)
 	{
 		// Get the minimum stability information from com_installer
 		$minimumStability = JComponentHelper::getParams('com_installer')->get('minimum_stability', JUpdater::STABILITY_STABLE);
@@ -1750,7 +1752,17 @@ ENDDATA;
 
 		$downloadUrl = $update->get('downloadurl');
 
-		return !empty($downloadUrl->_data) ? $update->get('minCompatibleVersion') : false;
+		if (empty($downloadUrl->_data))
+		{
+			return false;
+		}
+
+		$minVersion = $update->get('minCompatibleVersion');
+		$maxVersion = $update->get('version');
+
+		return version_compare($maxVersion, $extensionVersion, '<') || version_compare($minVersion, $extensionVersion, '>')
+			? $maxVersion
+			: $extensionVersion;
 	}
 
 	/**
