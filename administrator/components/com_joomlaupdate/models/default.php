@@ -1757,14 +1757,21 @@ ENDDATA;
 			return false;
 		}
 
-		$minVersion = $update->get('minCompatibleVersion')->_data;
-		$maxVersion = $update->get('version')->_data;
+		$maxVersion = $update->get('version');
+
+		if (empty($maxVersion))
+		{
+			return false;
+		}
+
+		$minVersion = $update->get('minCompatibleVersion');
 
 		// Return the latest available update version if the currently installed version is not known or not compatble
-		return empty($extensionVersion)
-			|| version_compare($maxVersion, $extensionVersion, '<')
-			|| version_compare($minVersion, $extensionVersion, '>')
-			? $maxVersion
+		return empty($minVersion)
+			|| empty($extensionVersion)
+			|| version_compare($maxVersion->_data, $extensionVersion, '<')
+			|| version_compare($minVersion->_data, $extensionVersion, '>')
+			? $maxVersion->_data
 			: $extensionVersion;
 	}
 
