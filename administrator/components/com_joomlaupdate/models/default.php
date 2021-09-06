@@ -1760,8 +1760,10 @@ ENDDATA;
 		$minVersion = $update->get('minCompatibleVersion')->_data;
 		$maxVersion = $update->get('version')->_data;
 
-		// Return the latest available update version if the currently installed version is not compatble
-		return version_compare($maxVersion, $extensionVersion, '<') || version_compare($minVersion, $extensionVersion, '>')
+		// Return the latest available update version if the currently installed version is not known or not compatble
+		return empty($extensionVersion)
+			|| version_compare($maxVersion, $extensionVersion, '<')
+			|| version_compare($minVersion, $extensionVersion, '>')
 			? $maxVersion
 			: $extensionVersion;
 	}
