@@ -46,6 +46,10 @@ return RectorConfig::configure()
         \Rector\CodeQuality\Rector\FunctionLike\SimplifyUselessVariableRector::class,
         \Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector::class,
     ])
+    // Code styles rule
+    ->withRules([
+        \Rector\Php55\Rector\String_\StringClassNameToClassConstantRector::class,
+    ])
     // Potential code quality rules
     ->withRules([
         \Rector\CodingStyle\Rector\FuncCall\CountArrayToEmptyArrayComparisonRector::class, // Performance improvement
@@ -70,7 +74,7 @@ return RectorConfig::configure()
         \Rector\CodeQuality\Rector\If_\ShortenElseIfRector::class,
         \Rector\CodeQuality\Rector\Foreach_\ForeachToInArrayRector::class,
         \Rector\CodeQuality\Rector\Foreach_\SimplifyForeachToCoalescingRector::class,
-        
+
     ])
     // Blow are the optional rules which we might run and explode in the future
     ->withRules([
