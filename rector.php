@@ -3,8 +3,14 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\ValueObject\PhpVersion;
 
 return RectorConfig::configure()
+    ->withPhpVersion(PhpVersion::PHP_81)
+    ->withImportNames(true, false, false, true)
+    ->withBootstrapFiles([
+        __DIR__ . '/build/phpstan/joomla-bootstrap.php',
+    ])
     ->withPaths([
         //__DIR__ . '/administrator/components',
         __DIR__ . '/administrator/modules',
@@ -32,6 +38,7 @@ return RectorConfig::configure()
         \Rector\Php53\Rector\Ternary\TernaryToElvisRector::class,
         \Rector\Php74\Rector\Assign\NullCoalescingOperatorRector::class,
         \Rector\Php70\Rector\Ternary\TernaryToNullCoalescingRector::class,
+        \Rector\Php70\Rector\StmtsAwareInterface\IfIssetToCoalescingRector::class,
         \Rector\Php71\Rector\List_\ListToArrayDestructRector::class,
     ])
     // Blow are the optional rules which we might run and explode in the future
