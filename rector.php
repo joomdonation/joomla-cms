@@ -7,7 +7,7 @@ use Rector\ValueObject\PhpVersion;
 
 return RectorConfig::configure()
     ->withPhpVersion(PhpVersion::PHP_81)
-    ->withImportNames(true, false, false, true)
+    ->withImportNames(false, false, false, true)
     ->withBootstrapFiles([
         __DIR__ . '/build/phpstan/joomla-bootstrap.php',
     ])
