@@ -41,6 +41,37 @@ return RectorConfig::configure()
         \Rector\Php70\Rector\StmtsAwareInterface\IfIssetToCoalescingRector::class,
         \Rector\Php71\Rector\List_\ListToArrayDestructRector::class,
     ])
+    // Potential rules
+    ->withRules([
+        \Rector\CodeQuality\Rector\FunctionLike\SimplifyUselessVariableRector::class,
+        \Rector\DeadCode\Rector\Assign\RemoveUnusedVariableAssignRector::class,
+    ])
+    // Potential code quality rules
+    ->withRules([
+        \Rector\CodingStyle\Rector\FuncCall\CountArrayToEmptyArrayComparisonRector::class, // Performance improvement
+        \Rector\CodeQuality\Rector\FuncCall\ArrayMergeOfNonArraysToSimpleArrayRector::class,
+        \Rector\CodeQuality\Rector\FuncCall\ChangeArrayPushToArrayAssignRector::class,
+        \Rector\CodeQuality\Rector\BooleanAnd\SimplifyEmptyArrayCheckRector::class,
+        \Rector\CodeQuality\Rector\Assign\CombinedAssignRector::class,
+        \Rector\CodeQuality\Rector\For_\ForRepeatedCountToOwnVariableRector::class,
+        \Rector\CodeQuality\Rector\Empty_\SimplifyEmptyCheckOnEmptyArrayRector::class,
+        \Rector\CodeQuality\Rector\Identical\SimplifyConditionsRector::class,
+        \Rector\CodeQuality\Rector\Identical\BooleanNotIdenticalToNotIdenticalRector::class,
+        \Rector\CodeQuality\Rector\Identical\StrlenZeroToIdenticalEmptyStringRector::class,
+        \Rector\CodeQuality\Rector\Identical\SimplifyBoolIdenticalTrueRector::class,
+        \Rector\CodeQuality\Rector\Ternary\ArrayKeyExistsTernaryThenValueToCoalescingRector::class,
+        \Rector\CodeQuality\Rector\Ternary\UnnecessaryTernaryExpressionRector::class,
+        \Rector\CodeQuality\Rector\Ternary\TernaryEmptyArrayArrayDimFetchToCoalesceRector::class,
+        \Rector\CodeQuality\Rector\Concat\JoinStringConcatRector::class,
+        \Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector::class,
+        \Rector\CodeQuality\Rector\If_\SimplifyIfNullableReturnRector::class,
+        \Rector\CodeQuality\Rector\If_\SimplifyIfNotNullReturnRector::class,
+        \Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector::class,
+        \Rector\CodeQuality\Rector\If_\ShortenElseIfRector::class,
+        \Rector\CodeQuality\Rector\Foreach_\ForeachToInArrayRector::class,
+        \Rector\CodeQuality\Rector\Foreach_\SimplifyForeachToCoalescingRector::class,
+        
+    ])
     // Blow are the optional rules which we might run and explode in the future
     ->withRules([
             \Rector\CodeQuality\Rector\Class_\CompleteDynamicPropertiesRector::class,
