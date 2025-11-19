@@ -87,7 +87,7 @@ namespace {
 namespace Joomla\Filesystem
 {
     // Fake the File class
-    if (!class_exists('\Joomla\Filesystem\File')) {
+    if (!class_exists(\Joomla\Filesystem\File::class)) {
         /**
          * File mock class
          *
@@ -168,7 +168,7 @@ namespace Joomla\Filesystem
     }
 
     // Fake the Folder class, mapping it to Restore's post-processing class
-    if (!class_exists('\Joomla\Filesystem\Folder')) {
+    if (!class_exists(\Joomla\Filesystem\Folder::class)) {
         /**
          * Folder mock class
          *
@@ -238,18 +238,18 @@ namespace Joomla\Filesystem
     }
 
     if (!class_exists('\Joomla\CMS\Filesystem\File')) {
-        class_alias('\\Joomla\\Filesystem\\File', '\\Joomla\\CMS\\Filesystem\\File');
+        class_alias(\Joomla\Filesystem\File::class, '\\Joomla\\CMS\\Filesystem\\File');
     }
 
     if (!class_exists('\Joomla\CMS\Filesystem\Folder')) {
-        class_alias('\\Joomla\\Filesystem\\Folder', '\\Joomla\\CMS\\Filesystem\\Folder');
+        class_alias(\Joomla\Filesystem\Folder::class, '\\Joomla\\CMS\\Filesystem\\Folder');
     }
 }
 
 namespace Joomla\CMS\Language
 {
     // Fake the Text class - we aren't going to show errors to people anyhow
-    if (!class_exists('\Joomla\CMS\Language\Text')) {
+    if (!class_exists(\Joomla\CMS\Language\Text::class)) {
         /**
          * Text mock class
          *

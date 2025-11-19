@@ -25,15 +25,15 @@ JLoader::registerAlias('JDataDumpable', '\\Joomla\\Data\\DumpableInterface', '6.
 
 JLoader::registerAlias('JApplicationAdministrator', '\\Joomla\\CMS\\Application\\AdministratorApplication', '6.0');
 JLoader::registerAlias('JApplicationHelper', '\\Joomla\\CMS\\Application\\ApplicationHelper', '6.0');
-JLoader::registerAlias('JApplicationBase', '\\Joomla\\CMS\\Application\\BaseApplication', '6.0');
-JLoader::registerAlias('JApplicationCli', '\\Joomla\\CMS\\Application\\CliApplication', '6.0');
+JLoader::registerAlias('JApplicationBase', \Joomla\CMS\Application\BaseApplication::class, '6.0');
+JLoader::registerAlias('JApplicationCli', \Joomla\CMS\Application\CliApplication::class, '6.0');
 JLoader::registerAlias('JApplicationCms', '\\Joomla\\CMS\\Application\\CMSApplication', '6.0');
 JLoader::registerAlias('JApplicationDaemon', '\\Joomla\\CMS\\Application\\DaemonApplication', '6.0');
 JLoader::registerAlias('JApplicationSite', '\\Joomla\\CMS\\Application\\SiteApplication', '6.0');
 JLoader::registerAlias('JApplicationWeb', '\\Joomla\\CMS\\Application\\WebApplication', '6.0');
 JLoader::registerAlias('JApplicationWebClient', '\\Joomla\\Application\\Web\\WebClient', '6.0');
 JLoader::registerAlias('JDaemon', '\\Joomla\\CMS\\Application\\DaemonApplication', '6.0');
-JLoader::registerAlias('JCli', '\\Joomla\\CMS\\Application\\CliApplication', '6.0');
+JLoader::registerAlias('JCli', \Joomla\CMS\Application\CliApplication::class, '6.0');
 JLoader::registerAlias('JWeb', '\\Joomla\\CMS\\Application\\WebApplication', '4.0');
 JLoader::registerAlias('JWebClient', '\\Joomla\\Application\\Web\\WebClient', '4.0');
 
@@ -434,10 +434,10 @@ JLoader::registerAlias('JBuffer', '\\Joomla\\CMS\\Utility\\BufferStreamHandler',
 JLoader::registerAlias('JUtility', '\\Joomla\\CMS\\Utility\\Utility', '6.0');
 
 JLoader::registerAlias('JInputCli', '\\Joomla\\CMS\\Input\\Cli', '6.0');
-JLoader::registerAlias('JInputCookie', '\\Joomla\\CMS\\Input\\Cookie', '6.0');
-JLoader::registerAlias('JInputFiles', '\\Joomla\\CMS\\Input\\Files', '6.0');
-JLoader::registerAlias('JInput', '\\Joomla\\CMS\\Input\\Input', '6.0');
-JLoader::registerAlias('JInputJSON', '\\Joomla\\CMS\\Input\\Json', '6.0');
+JLoader::registerAlias('JInputCookie', \Joomla\CMS\Input\Cookie::class, '6.0');
+JLoader::registerAlias('JInputFiles', \Joomla\CMS\Input\Files::class, '6.0');
+JLoader::registerAlias('JInput', \Joomla\CMS\Input\Input::class, '6.0');
+JLoader::registerAlias('JInputJSON', \Joomla\CMS\Input\Json::class, '6.0');
 
 JLoader::registerAlias('JFeed', '\\Joomla\\CMS\\Feed\\Feed', '6.0');
 JLoader::registerAlias('JFeedEntry', '\\Joomla\\CMS\\Feed\\FeedEntry', '6.0');
@@ -467,30 +467,30 @@ JLoader::registerAlias('JExtensionHelper', '\\Joomla\\CMS\\Extension\\ExtensionH
 
 JLoader::registerAlias('JHtml', '\\Joomla\\CMS\\HTML\\HTMLHelper', '6.0');
 
-JLoader::registerAlias('\\Joomla\\Application\\Cli\\CliInput', '\\Joomla\\CMS\\Application\\CLI\\CliInput', '6.0');
-JLoader::registerAlias('\\Joomla\\Application\\Cli\\CliOutput', '\\Joomla\\CMS\\Application\\CLI\\CliOutput', '6.0');
-JLoader::registerAlias('\\Joomla\\Application\\Cli\\ColorStyle', '\\Joomla\\CMS\\Application\\CLI\\ColorStyle', '6.0');
-JLoader::registerAlias('\\Joomla\\Application\\Cli\\Output\\Stdout', '\\Joomla\\CMS\\Application\\CLI\\Output\\Stdout', '6.0');
-JLoader::registerAlias('\\Joomla\\Application\\Cli\\Output\\Xml', '\\Joomla\\CMS\\Application\\CLI\\Output\\Xml', '6.0');
+JLoader::registerAlias('\\Joomla\\Application\\Cli\\CliInput', \Joomla\CMS\Application\CLI\CliInput::class, '6.0');
+JLoader::registerAlias('\\Joomla\\Application\\Cli\\CliOutput', \Joomla\CMS\Application\CLI\CliOutput::class, '6.0');
+JLoader::registerAlias('\\Joomla\\Application\\Cli\\ColorStyle', \Joomla\CMS\Application\CLI\ColorStyle::class, '6.0');
+JLoader::registerAlias('\\Joomla\\Application\\Cli\\Output\\Stdout', \Joomla\CMS\Application\CLI\Output\Stdout::class, '6.0');
+JLoader::registerAlias('\\Joomla\\Application\\Cli\\Output\\Xml', \Joomla\CMS\Application\CLI\Output\Xml::class, '6.0');
 JLoader::registerAlias(
     '\\Joomla\\Application\\Cli\\Output\\Processor\\ColorProcessor',
-    '\\Joomla\\CMS\\Application\\CLI\\Output\\Processor\\ColorProcessor',
+    \Joomla\CMS\Application\CLI\Output\Processor\ColorProcessor::class,
     '6.0'
 );
 JLoader::registerAlias(
     '\\Joomla\\Application\\Cli\\Output\\Processor\\ProcessorInterface',
-    '\\Joomla\\CMS\\Application\\CLI\\Output\\Processor\\ProcessorInterface',
+    \Joomla\CMS\Application\CLI\Output\Processor\ProcessorInterface::class,
     '6.0'
 );
 
-JLoader::registerAlias('JFile', '\\Joomla\\CMS\\Filesystem\\File', '6.0');
-JLoader::registerAlias('JFolder', '\\Joomla\\CMS\\Filesystem\\Folder', '6.0');
-JLoader::registerAlias('JFilesystemHelper', '\\Joomla\\CMS\\Filesystem\\FilesystemHelper', '6.0');
-JLoader::registerAlias('JFilesystemPatcher', '\\Joomla\\CMS\\Filesystem\\Patcher', '6.0');
-JLoader::registerAlias('JPath', '\\Joomla\\CMS\\Filesystem\\Path', '6.0');
-JLoader::registerAlias('JStream', '\\Joomla\\CMS\\Filesystem\\Stream', '6.0');
-JLoader::registerAlias('JStreamString', '\\Joomla\\CMS\\Filesystem\\Streams\\StreamString', '6.0');
-JLoader::registerAlias('JStringController', '\\Joomla\\CMS\\Filesystem\\Support\\StringController', '6.0');
+JLoader::registerAlias('JFile', \Joomla\CMS\Filesystem\File::class, '6.0');
+JLoader::registerAlias('JFolder', \Joomla\CMS\Filesystem\Folder::class, '6.0');
+JLoader::registerAlias('JFilesystemHelper', \Joomla\CMS\Filesystem\FilesystemHelper::class, '6.0');
+JLoader::registerAlias('JFilesystemPatcher', \Joomla\CMS\Filesystem\Patcher::class, '6.0');
+JLoader::registerAlias('JPath', \Joomla\CMS\Filesystem\Path::class, '6.0');
+JLoader::registerAlias('JStream', \Joomla\CMS\Filesystem\Stream::class, '6.0');
+JLoader::registerAlias('JStreamString', \Joomla\CMS\Filesystem\Streams\StreamString::class, '6.0');
+JLoader::registerAlias('JStringController', \Joomla\CMS\Filesystem\Support\StringController::class, '6.0');
 
 JLoader::registerAlias('JClassLoader', '\\Joomla\\CMS\\Autoload\\ClassLoader', '6.0');
 

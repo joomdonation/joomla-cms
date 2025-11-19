@@ -95,12 +95,12 @@ abstract class HTMLHelper
             );
         }
 
-        $prefix = \count($parts) === 3 ? array_shift($parts) : 'Joomla\\CMS\\HTML\\HTMLHelper';
+        $prefix = \count($parts) === 3 ? array_shift($parts) : \Joomla\CMS\HTML\HTMLHelper::class;
         $file   = \count($parts) === 2 ? array_shift($parts) : '';
         $func   = array_shift($parts);
 
         if (strtolower($prefix) === 'jhtml') {
-            $prefix = 'Joomla\\CMS\\HTML\\HTMLHelper';
+            $prefix = \Joomla\CMS\HTML\HTMLHelper::class;
         }
 
         return [strtolower($prefix . '.' . $file . '.' . $func), $prefix, $file, $func];
@@ -136,7 +136,7 @@ abstract class HTMLHelper
          * Support fetching services from the registry if a custom class prefix was not given (a three segment key),
          * the service comes from a class other than this one, and a service has been registered for the file.
          */
-        if ($prefix === 'Joomla\\CMS\\HTML\\HTMLHelper' && $file !== '' && static::getServiceRegistry()->hasService($file)) {
+        if ($prefix === \Joomla\CMS\HTML\HTMLHelper::class && $file !== '' && static::getServiceRegistry()->hasService($file)) {
             $service = static::getServiceRegistry()->getService($file);
 
             $toCall = [$service, $func];
@@ -162,7 +162,7 @@ abstract class HTMLHelper
             \JLoader::register($className, $path);
 
             if (!class_exists($className)) {
-                if ($prefix !== 'Joomla\\CMS\\HTML\\HTMLHelper') {
+                if ($prefix !== \Joomla\CMS\HTML\HTMLHelper::class) {
                     throw new \InvalidArgumentException(\sprintf('%s not found.', $className), 500);
                 }
 
