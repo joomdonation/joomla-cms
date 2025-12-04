@@ -13,15 +13,19 @@ use Doctrine\Inflector\InflectorFactory;
 use Joomla\CMS\Application\CMSWebApplicationInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Model;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormFactoryAwareInterface;
 use Joomla\CMS\Form\FormFactoryAwareTrait;
 use Joomla\CMS\Form\FormFactoryInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\MVC\Model\FormModel;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Service\Provider\Database;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Input\Input;
+use Joomla\Utilities\ArrayHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -310,14 +314,7 @@ class FormController extends BaseController implements FormFactoryAwareInterface
         $recordId = $this->input->getInt($key);
 
         // Attempt to check-in the current record.
-        if ($recordId && $table->hasField('checked_out') && $model->checkin($recordId) === false) {
-            // Check-in failed, go back to the record and display a notice.
-            $this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'error');
-
-            $this->setRedirect(
-                $this->getRedirectToItemUrl($recordId, $key)
-            );
-
+        if ($recordId && $table->supportCheckin() && !$this->attemptCheckin($model, $recordId, $key)) {
             return false;
         }
 
@@ -372,7 +369,6 @@ class FormController extends BaseController implements FormFactoryAwareInterface
 
         // Get the previous record id (if any) and the current record id.
         $recordId = (int) (\count($cid) ? $cid[0] : $this->input->getInt($urlVar));
-        $checkin  = $table->hasField('checked_out');
 
         // Access check.
         if (!$this->allowEdit([$key => $recordId], $key)) {
@@ -386,14 +382,7 @@ class FormController extends BaseController implements FormFactoryAwareInterface
         }
 
         // Attempt to check-out the new record for editing and redirect.
-        if ($checkin && !$model->checkout($recordId)) {
-            // Check-out failed, display a notice but allow the user to see the record.
-            $this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKOUT_FAILED', $model->getError()), 'error');
-
-            $this->setRedirect(
-                $this->getRedirectToItemUrl($recordId, $urlVar)
-            );
-
+        if ($table->supportCheckin() && !$this->attemptCheckout($model, $recordId, $urlVar)) {
             return false;
         }
 
@@ -524,6 +513,22 @@ class FormController extends BaseController implements FormFactoryAwareInterface
     }
 
     /**
+     * Function that allows child controller access and modify to model data
+     * before the data is saved.
+     *
+     * @param   BaseDatabaseModel  $model      The data model object.
+     * @param   array              $validData  The validated data.
+     *
+     * @return  array
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    protected function preSaveHook(BaseDatabaseModel $model, array $validData = []):array
+    {
+        return $validData;
+    }
+
+    /**
      * Function that allows child controller access to model data
      * after the data has been saved.
      *
@@ -578,14 +583,7 @@ class FormController extends BaseController implements FormFactoryAwareInterface
         // The save2copy task needs to be handled slightly differently.
         if ($task === 'save2copy') {
             // Check-in the original row.
-            if ($checkin && $model->checkin($data[$key]) === false) {
-                // Check-in failed. Go back to the item and display a notice.
-                $this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'error');
-
-                $this->setRedirect(
-                    $this->getRedirectToItemUrl($recordId, $urlVar)
-                );
-
+            if ($table->supportCheckin() && !$this->attemptCheckin($model, $recordId, $urlVar)) {
                 return false;
             }
 
@@ -616,51 +614,19 @@ class FormController extends BaseController implements FormFactoryAwareInterface
             return false;
         }
 
-        // Send an object which can be modified through the plugin event
-        $objData = (object) $data;
-        $this->getDispatcher()->dispatch(
-            'onContentNormaliseRequestData',
-            new Model\NormaliseRequestDataEvent('onContentNormaliseRequestData', [
-                'context' => $this->option . '.' . $this->context,
-                'data'    => $objData,
-                'subject' => $form,
-            ])
-        );
-        $data = (array) $objData;
+        // Allow plugins to normalise/preprocess the data.
+        $data = $this->normalizeRequestData($form, $data);
 
         // Test whether the data is valid.
         $validData = $model->validate($form, $data);
 
         // Check for validation errors.
         if ($validData === false) {
-            // Get the validation messages.
-            $errors = $model->getErrors();
-
             // Push up to three validation messages out to the user.
-            for ($i = 0, $n = \count($errors); $i < $n && $i < 3; $i++) {
-                if ($errors[$i] instanceof \Exception) {
-                    $this->app->enqueueMessage($errors[$i]->getMessage(), CMSWebApplicationInterface::MSG_ERROR);
-                } else {
-                    $this->app->enqueueMessage($errors[$i], CMSWebApplicationInterface::MSG_ERROR);
-                }
-            }
+            $this->handleSaveDataValidationErrors($model->getErrors());
 
-            /**
-             * We need the filtered value of calendar fields because the UTC normalisation is
-             * done in the filter and on output. This would apply the Timezone offset on
-             * reload. We set the calendar values we save to the processed date.
-             */
-            $filteredData = $form->filter($data);
-
-            foreach ($form->getFieldset() as $field) {
-                if ($field->type === 'Calendar') {
-                    $fieldName = $field->fieldname;
-
-                    if (isset($filteredData[$fieldName])) {
-                        $data[$fieldName] = $filteredData[$fieldName];
-                    }
-                }
-            }
+            // Apply filter to calendar fields to avoid time shifts when displaying the form again.
+            $data = $this->applyFilterForCalendarFieldsToRequestData($form, $data);
 
             // Save the data in the session.
             $this->app->setUserState($context . '.data', $data);
@@ -676,6 +642,9 @@ class FormController extends BaseController implements FormFactoryAwareInterface
         if (!isset($validData['tags'])) {
             $validData['tags'] = [];
         }
+
+        // Call the preSaveHook method to allow for the child class to acce and modify validated data before sav
+        $validData = $this->preSaveHook($model, $validData);
 
         // Attempt to save the data.
         if (!$model->save($validData)) {
@@ -693,24 +662,14 @@ class FormController extends BaseController implements FormFactoryAwareInterface
         }
 
         // Save succeeded, so check-in the record.
-        if ($checkin && $model->checkin($validData[$key]) === false) {
+        if ($table->supportCheckin() && !$this->attemptCheckin($model, $recordId, $urlVar)) {
             // Save the data in the session.
             $this->app->setUserState($context . '.data', $validData);
-
-            // Check-in failed, so go back to the record and display a notice.
-            $this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'error');
-
-            $this->setRedirect(
-                $this->getRedirectToItemUrl($recordId, $urlVar)
-            );
 
             return false;
         }
 
-        $langKey = $this->text_prefix . ($recordId === 0 && $this->app->isClient('site') ? '_SUBMIT' : '') . '_SAVE_SUCCESS';
-        $prefix  = $this->app->getLanguage()->hasKey($langKey) ? $this->text_prefix : 'JLIB_APPLICATION';
-
-        $this->setMessage(Text::_($prefix . ($recordId === 0 && $this->app->isClient('site') ? '_SUBMIT' : '') . '_SAVE_SUCCESS'));
+        $this->setSaveSuccessMessage($recordId);
 
         // Redirect the user and adjust session state based on the chosen task.
         switch ($task) {
@@ -814,6 +773,124 @@ class FormController extends BaseController implements FormFactoryAwareInterface
          * done in the filter and on output. This would apply the Timezone offset on
          * reload. We set the calendar values we save to the processed date.
          */
+        $data = $this->applyFilterForCalendarFieldsToRequestData($form, $data);
+
+        // Save the data in the session.
+        $this->app->setUserState($this->option . '.edit.' . $this->context . '.data', $data);
+
+        $this->setRedirect($redirectUrl);
+        $this->redirect();
+    }
+
+    /**
+     * Method to perform checkin of a record.
+     *
+     * @param   FormModel   $model     The model object.
+     * @param   string|int  $recordId  The primary key id for the item.
+     * @param   string      $urlVar    The name of the URL variable for the id.
+     *
+     * @return  boolean  True if successful, false otherwise and internal error is set.
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    protected function attemptCheckin(FormModel $model, $recordId, $urlVar): bool
+    {
+        if ($model->checkin($recordId) === false) {
+            // Check-in failed, go back to the record and display a notice.
+            $this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError()), 'error');
+
+            $this->setRedirect($this->getRedirectToItemUrl($recordId, $urlVar));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Method to perform checkout of a record.
+     *
+     * @param   FormModel   $model     The model object.
+     * @param   string|int  $recordId  The primary key id for the item.
+     * @param   string      $urlVar    The name of the URL variable for the id.
+     *
+     * @return  boolean  True if successful, false otherwise and internal error is set.
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    protected function attemptCheckout(FormModel $model, $recordId, $urlVar): bool
+    {
+        if ($model->checkout($recordId) === false) {
+            // Check-out failed, display a notice but allow the user to see the record.
+            $this->setMessage(Text::sprintf('JLIB_APPLICATION_ERROR_CHECKOUT_FAILED', $model->getError()), 'error');
+
+            $this->setRedirect($this->getRedirectToItemUrl($recordId, $urlVar));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Method to normalize the request data through the plugin event.
+     *
+     * @param   Form   $form  The form object.
+     * @param   array  $data  The data array.
+     *
+     * @return  array  The normalized data.
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    protected function normalizeRequestData(Form $form, array $data): array
+    {
+        // Send an object which can be modified through the plugin event
+        $objData = (object) $data;
+        $this->getDispatcher()->dispatch(
+            'onContentNormaliseRequestData',
+            new Model\NormaliseRequestDataEvent('onContentNormaliseRequestData', [
+                'context' => $this->option . '.' . $this->context,
+                'data'    => $objData,
+                'subject' => $form,
+            ])
+        );
+
+        return (array) $objData;
+    }
+
+    /**
+     * Method to handle save data validation errors.
+     *
+     * @param   array  $errors  The array of validation errors.
+     *
+     * @return  void
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    protected function handleSaveDataValidationErrors(array $errors): void
+    {
+        // Push up to three validation messages out to the user.
+        for ($i = 0, $n = \count($errors); $i < $n && $i < 3; $i++) {
+            if ($errors[$i] instanceof \Exception) {
+                $this->app->enqueueMessage($errors[$i]->getMessage(), CMSWebApplicationInterface::MSG_ERROR);
+            } else {
+                $this->app->enqueueMessage($errors[$i], CMSWebApplicationInterface::MSG_ERROR);
+            }
+        }
+    }
+
+    /**
+     * Method to merge filtered calendar fields to request data.
+     *
+     * @param   Form   $form  The form object.
+     * @param   array  $data  The request data array.
+     *
+     * @return  array  The request data array with filter applied for calendar fields.
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    protected function applyFilterForCalendarFieldsToRequestData(Form $form, array $data): array
+    {
         $filteredData = $form->filter($data);
 
         foreach ($form->getFieldset() as $field) {
@@ -832,11 +909,29 @@ class FormController extends BaseController implements FormFactoryAwareInterface
             }
         }
 
-        // Save the data in the session.
-        $this->app->setUserState($this->option . '.edit.' . $this->context . '.data', $data);
+        return $data;
+    }
 
-        $this->setRedirect($redirectUrl);
-        $this->redirect();
+    /**
+     * Method to set the save success message.
+     *
+     * @param   int  $recordId  The record id.
+     *
+     * @return  void
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    protected function setSaveSuccessMessage($recordId): void
+    {
+        $langKey = $this->text_prefix
+            . ($recordId === 0 && $this->app->isClient('site') ? '_SUBMIT' : '')
+            . '_SAVE_SUCCESS';
+
+        $prefix  = $this->app->getLanguage()->hasKey($langKey) ? $this->text_prefix : 'JLIB_APPLICATION';
+
+        $this->setMessage(
+            Text::_($prefix . ($recordId === 0 && $this->app->isClient('site') ? '_SUBMIT' : '') . '_SAVE_SUCCESS')
+        );
     }
 
     /**
