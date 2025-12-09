@@ -20,7 +20,7 @@ use Joomla\CMS\Version;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\Filesystem\Path;
-use Joomla\Http\HttpFactory;
+use Joomla\CMS\Http\HttpFactory;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -86,7 +86,7 @@ abstract class InstallerHelper
         $headers = $event->getArgument('headers', $headers);
 
         try {
-            $response = (new HttpFactory())->getHttp()->get($url, $headers);
+            $response = HttpFactory::getHttpClient()->get($url, $headers);
         } catch (\RuntimeException $exception) {
             Log::add(Text::sprintf('JLIB_INSTALLER_ERROR_DOWNLOAD_SERVER_CONNECT', $exception->getMessage()), Log::WARNING, 'jerror');
 

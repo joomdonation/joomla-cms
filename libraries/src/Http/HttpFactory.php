@@ -20,11 +20,31 @@ use Joomla\Http\TransportInterface;
  * HTTP factory class.
  *
  * @since  3.0.0
- * @deprecated  6.0.0 will be removed in 7.0
- *              Use Joomla\Http\HttpFactory instead
  */
 class HttpFactory
 {
+    /**
+     * Method to create a Joomla\Http\Http instance.
+     *
+     * @param   array|\ArrayAccess  $options   Client options array.
+     * @param   array|string        $adapters  Adapter (string) or queue of adapters (array) to use for communication.
+     *
+     * @return  \Joomla\Http\Http
+     *
+     * @throws  \RuntimeException
+     * @since   __DEPLOY_VERSION__
+     */
+    public static function getHttpClient($options = [], $adapters = null)
+    {
+        // Set default userAgent if nothing else is set
+        if (!isset($options['userAgent'])) {
+            $version              = new Version();
+            $options['userAgent'] = $version->getUserAgent('Joomla', true, false);
+        }
+
+        return (new \Joomla\Http\HttpFactory())->getHttp($options, $adapters);
+    }
+
     /**
      * Method to create a JHttp instance.
      *
