@@ -15,6 +15,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
 use Joomla\Filter\InputFilter;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -226,8 +227,16 @@ class Pagination
             return;
         }
 
+        $formToken = Session::getFormToken();
+
         // Filter them and add to the params list
         foreach ($router->getVars() as $key => $value) {
+            // Allow passing form token in pagination URLs
+            if ($value === '1' && $key === $formToken) {
+                $this->setAdditionalUrlParam($key, $value);
+                continue;
+            }
+
             // Check if the parameter is allowed
             if (empty($this->paramsFromRequest[$key])) {
                 continue;
