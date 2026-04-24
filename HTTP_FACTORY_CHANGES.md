@@ -35,7 +35,7 @@ Updated HTTP factory implementation to follow proper dependency injection princi
 ### 3. ✅ `libraries/src/Http/HttpFactoryAwareTrait.php`
 **Changes:**
 - Fixed documentation: "FormFactoryInterface" → "HttpFactoryInterface"
-- Fixed documentation: "FormFactory" → "HttpFactory"  
+- Fixed documentation: "FormFactory" → "HttpFactory"
 - Fixed documentation: "form factory" → "http factory"
 - Updated `@since` tags to `__DEPLOY_VERSION__`
 - Improved trait docblock: "HttpFactoryAwareTrait Aware" → "HttpFactory Aware"
@@ -68,16 +68,16 @@ use Joomla\CMS\MVC\Model\ListModel;
 class MyModel extends ListModel implements HttpFactoryAwareInterface
 {
     use HttpFactoryAwareTrait;
-    
+
     public function fetchExternalData()
     {
         // HttpFactory is automatically injected by MVCFactory
         $http = $this->getHttpFactory()->getHttp();
-        
+
         // User agent is automatically set
         // Proxy is automatically configured if enabled
         $response = $http->get('https://api.example.com/data');
-        
+
         return json_decode($response->getBody());
     }
 }
@@ -143,21 +143,50 @@ $http = $httpFactory->getHttp();
 
 ## Next Steps
 
-1. **Test the implementation** with the examples above
-2. **Update existing code** to use the new pattern (16 locations identified)
+1. ✅ **Test the implementation** with the examples above
+2. ✅ **Update existing code** to use the new pattern - **COMPLETED FOR MODELS**
 3. **Create PR** to Joomla CMS repository
 4. **Document the pattern** for extension developers
 
-## Code Locations to Update (Optional)
+## Models Updated to Use HttpFactory (✅ COMPLETED)
 
-The following files still use the old pattern and could be updated:
+### 1. ✅ `administrator/components/com_joomlaupdate/src/Model/UpdateModel.php`
+**Changes:**
+- Added `HttpFactoryAwareInterface` implementation and `HttpFactoryAwareTrait`
+- Removed manual `new Version()` and `new HttpFactory()` calls
+- Updated 4 methods to use `$this->getHttpFactory()->getHttp()`:
+  - `getPackageUrl()` - Lines 392, 403
+  - `changeAutoUpdateRegistration()` - Line 591
+  - `createUpdateFile()` - Line 788
+  - `getCollectionDetailsUrls()` - Line 1904
+- Removed `use Joomla\Http\HttpFactory` import
+- User agent now automatically set by HttpClientFactory
+- Proxy settings now automatically applied from global config
+
+### 2. ✅ `administrator/components/com_config/src/Model/ApplicationModel.php`
+**Changes:**
+- Added `HttpFactoryAwareInterface` implementation and `HttpFactoryAwareTrait`
+- Removed manual `new HttpFactory()` call
+- Updated `save()` method to use `$this->getHttpFactory()->getHttp()` - Line 361
+- Removed `use Joomla\Http\HttpFactory` import
+- Now implements both `MailerFactoryAwareInterface` and `HttpFactoryAwareInterface`
+
+### 3. ✅ `administrator/components/com_installer/src/Model/LanguagesModel.php`
+**Status:** Already using the new pattern (was done previously as an example)
+
+## Code Locations Still Using Old Pattern (To Update Later)
+
+The following files still use the old pattern and could be updated in future PRs:
 - `libraries/src/Updater/UpdateAdapter.php` (line 305)
 - `libraries/src/Updater/Update.php` (lines 558, 664)
-- `administrator/components/com_joomlaupdate/src/Model/UpdateModel.php` (multiple locations)
 - `plugins/task/requests/src/Extension/Requests.php` (line 135)
 - `plugins/system/stats/src/Extension/Stats.php` (line 538)
 - `plugins/multifactorauth/yubikey/src/Extension/Yubikey.php` (line 377)
-- And others...
+- `libraries/src/Changelog/Changelog.php` (line 352)
+- `libraries/src/Updater/Adapter/TufAdapter.php` (line 88)
+- `libraries/src/Installer/InstallerHelper.php` (line 94)
+- `libraries/src/Feed/FeedFactory.php` (line 62)
+- `libraries/src/Captcha/Google/HttpBridgePostRequestMethod.php` (line 59)
 
-Note: `administrator/components/com_installer/src/Model/LanguagesModel.php` already uses the new pattern as an example.
+**Note:** These are not models, so they need different approaches (plugins via service providers, libraries via Factory container).
 
