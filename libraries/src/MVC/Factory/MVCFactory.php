@@ -15,6 +15,9 @@ use Joomla\CMS\Cache\CacheControllerFactoryAwareTrait;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormFactoryAwareInterface;
 use Joomla\CMS\Form\FormFactoryAwareTrait;
+use Joomla\CMS\Http\HttpFactoryAwareInterface;
+use Joomla\CMS\Http\HttpFactoryAwareTrait;
+use Joomla\CMS\Http\HttpFactoryInterface;
 use Joomla\CMS\Mail\MailerFactoryAwareInterface;
 use Joomla\CMS\Mail\MailerFactoryAwareTrait;
 use Joomla\CMS\MVC\Model\ModelInterface;
@@ -50,6 +53,7 @@ class MVCFactory implements MVCFactoryInterface, FormFactoryAwareInterface, Site
     use CacheControllerFactoryAwareTrait;
     use UserFactoryAwareTrait;
     use MailerFactoryAwareTrait;
+    use HttpFactoryAwareTrait;
 
     /**
      * The namespace to create the objects from.
@@ -115,6 +119,7 @@ class MVCFactory implements MVCFactoryInterface, FormFactoryAwareInterface, Site
         $this->setCacheControllerOnObject($controller);
         $this->setUserFactoryOnObject($controller);
         $this->setMailerFactoryOnObject($controller);
+        $this->setHttpFactoryOnObject($controller);
 
         if ($controller instanceof LoggerAwareInterface && $this->logger !== null) {
             $controller->setLogger($this->logger);
@@ -166,6 +171,7 @@ class MVCFactory implements MVCFactoryInterface, FormFactoryAwareInterface, Site
         $this->setCacheControllerOnObject($model);
         $this->setUserFactoryOnObject($model);
         $this->setMailerFactoryOnObject($model);
+        $this->setHttpFactoryOnObject($model);
 
         if ($model instanceof DatabaseAwareInterface) {
             try {
@@ -430,6 +436,28 @@ class MVCFactory implements MVCFactoryInterface, FormFactoryAwareInterface, Site
 
         try {
             $object->setMailerFactory($this->getMailerFactory());
+        } catch (\UnexpectedValueException) {
+            // Ignore it
+        }
+    }
+
+    /**
+     * Sets the internal http factory on the given object.
+     *
+     * @param   object  $object  The object
+     *
+     * @return  void
+     *
+     * @since   4.4.0
+     */
+    private function setHttpFactoryOnObject($object): void
+    {
+        if (!$object instanceof HttpFactoryAwareInterface) {
+            return;
+        }
+
+        try {
+            $object->setHttpFactory($this->getHttpFactory());
         } catch (\UnexpectedValueException) {
             // Ignore it
         }
