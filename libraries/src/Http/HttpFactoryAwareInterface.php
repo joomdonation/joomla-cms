@@ -9,20 +9,24 @@
 namespace Joomla\CMS\Http;
 
 // phpcs:disable PSR1.Files.SideEffects
-
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+/**
+ * Interface for a http factory aware class.
+ *
+ * @since  __DEPLOY_VERSION__
+ */
 interface HttpFactoryAwareInterface
 {
     /**
-     * Set the mailer factory to use.
+     * Set the http factory to use.
      *
-     * @param   ?HttpFactoryInterface  $httpFactory  The mailer factory to use.
+     * @param   ?HttpFactoryInterface  $httpFactory  The http factory to use.
      *
      * @return  void
      *
-     * @since   4.4.0
+     * @since   __DEPLOY_VERSION__
      */
     public function setHttpFactory(?HttpFactoryInterface $httpFactory = null);
 }

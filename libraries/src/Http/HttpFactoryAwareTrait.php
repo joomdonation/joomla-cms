@@ -14,7 +14,7 @@ namespace Joomla\CMS\Http;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * Defines the trait for a HttpFactoryAwareTrait Aware Class.
+ * Defines the trait for a HttpFactory Aware Class.
  *
  * @since  __DEPLOY_VERSION__
  */
@@ -29,12 +29,12 @@ trait HttpFactoryAwareTrait
     private $httpFactory;
 
     /**
-     * Get the FormFactoryInterface.
+     * Get the HttpFactoryInterface.
      *
      * @return  HttpFactoryInterface
      *
-     * @throws  \UnexpectedValueException May be thrown if the FormFactory has not been set.
-     * @since   4.0.0
+     * @throws  \UnexpectedValueException May be thrown if the HttpFactory has not been set.
+     * @since   __DEPLOY_VERSION__
      */
     public function getHttpFactory(): HttpFactoryInterface
     {
@@ -46,13 +46,13 @@ trait HttpFactoryAwareTrait
     }
 
     /**
-     * Set the form factory to use.
+     * Set the http factory to use.
      *
      * @param   ?HttpFactoryInterface  $httpFactory  The http factory to use.
      *
      * @return  $this
      *
-     * @since   4.0.0
+     * @since   __DEPLOY_VERSION__
      */
     public function setHttpFactory(?HttpFactoryInterface $httpFactory = null)
     {
