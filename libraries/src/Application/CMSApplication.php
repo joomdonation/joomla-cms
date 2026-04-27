@@ -301,6 +301,15 @@ abstract class CMSApplication extends WebApplication implements ContainerAwareIn
             $this->setupLogging();
             $this->createExtensionNamespaceMap();
 
+            /**
+             * Explicit start session to make sure current user can be accessed by calling getIdentity method
+             * from application instead of having hidden started in PluginHelper::importPlugin when Joomla calls
+             * Factory::getUser inside that method.
+             */
+            if (!$this->getSession()->isActive()) {
+                $this->getSession()->start();
+            }
+
             // Load the behaviour plugins
             PluginHelper::importPlugin('behaviour', null, true, $this->getDispatcher());
 
@@ -812,7 +821,7 @@ abstract class CMSApplication extends WebApplication implements ContainerAwareIn
         $this->loadLibraryLanguage();
 
         // Set user specific editor.
-        $user   = Factory::getUser();
+        $user   = $this->getIdentity();
         $editor = $user->getParam('editor', $this->get('editor'));
 
         if (!PluginHelper::isEnabled('editors', $editor)) {
@@ -965,7 +974,7 @@ abstract class CMSApplication extends WebApplication implements ContainerAwareIn
              * Any errors raised should be done in the plugin as this provides the ability
              * to provide much more information about why the routine may have failed.
              */
-            $user = Factory::getUser();
+            $user = $this->getIdentity();
 
             if ($response->type === 'Cookie') {
                 $user->cookieLogin = true;
