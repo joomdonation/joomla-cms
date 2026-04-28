@@ -46,7 +46,7 @@ return new class () implements ServiceProviderInterface {
         $container->set(AssociationExtensionInterface::class, new AssociationsHelper());
 
         $container->registerServiceProvider(new CategoryFactory('\\Joomla\\Component\\Contact'));
-        $container->registerServiceProvider(new MVCFactory('\\Joomla\\Component\\Contact'));
+        $container->registerServiceProvider(new \Joomla\Component\Contact\Administrator\Service\Provider\MVCFactory('\\Joomla\\Component\\Contact'));
         $container->registerServiceProvider(new ComponentDispatcherFactory('\\Joomla\\Component\\Contact'));
         $container->registerServiceProvider(new RouterFactory('\\Joomla\\Component\\Contact'));
 
