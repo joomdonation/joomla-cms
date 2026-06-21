@@ -179,8 +179,6 @@ class HtmlView extends AbstractView implements CurrentUserInterface
      */
     public function display($tpl = null)
     {
-        $app = Factory::getApplication();
-
         if ($this->option) {
             $component = $this->option;
         } else {
@@ -189,7 +187,7 @@ class HtmlView extends AbstractView implements CurrentUserInterface
 
         $context = $component . '.' . $this->getName();
 
-        $app->getDispatcher()->dispatch(
+        $this->getDispatcher()->dispatch(
             'onBeforeDisplay',
             AbstractEvent::create(
                 'onBeforeDisplay',
@@ -203,7 +201,7 @@ class HtmlView extends AbstractView implements CurrentUserInterface
 
         $result = $this->loadTemplate($tpl);
 
-        $event = $app->getDispatcher()->dispatch(
+        $event = $this->getDispatcher()->dispatch(
             'onAfterDisplay',
             AbstractEvent::create(
                 'onAfterDisplay',

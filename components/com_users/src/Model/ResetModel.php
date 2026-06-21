@@ -196,7 +196,7 @@ class ResetModel extends FormModel implements UserFactoryAwareInterface, MailerF
                 'subject' => $user,
             ]
         );
-        $app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         // Check for a user and that the tokens match.
         if (empty($user) || $user->activation !== $token) {
@@ -246,7 +246,7 @@ class ResetModel extends FormModel implements UserFactoryAwareInterface, MailerF
                 'subject' => $user,
             ]
         );
-        $app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         return true;
     }
@@ -448,7 +448,7 @@ class ResetModel extends FormModel implements UserFactoryAwareInterface, MailerF
                 'subject' => $user,
             ]
         );
-        $app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         // Save the user to the database.
         if (!$user->save(true)) {
@@ -501,7 +501,7 @@ class ResetModel extends FormModel implements UserFactoryAwareInterface, MailerF
                 'subject' => $user,
             ]
         );
-        $app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         return true;
     }
