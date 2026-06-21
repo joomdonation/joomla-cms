@@ -88,7 +88,7 @@ class MethodsController extends BaseController implements UserFactoryAwareInterf
         $message = null;
 
         $event = new NotifyActionLog('onComUsersControllerMethodsBeforeDisable', [$user]);
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         try {
             $model->deleteAll($user);
@@ -178,7 +178,7 @@ class MethodsController extends BaseController implements UserFactoryAwareInterf
         }
 
         $event = new NotifyActionLog('onComUsersControllerMethodsBeforeDoNotShowThisAgain', [$user]);
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         /** @var MethodsModel $model */
         $model = $this->getModel('Methods');

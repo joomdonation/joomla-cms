@@ -380,9 +380,11 @@ class Workflow
             }
         }
 
-        PluginHelper::importPlugin('workflow');
+        $dispatcher = $this->app->getDispatcher();
 
-        $eventResult = $this->app->getDispatcher()->dispatch(
+        PluginHelper::importPlugin('workflow', null, true, $dispatcher);
+
+        $eventResult = $dispatcher->dispatch(
             'onWorkflowBeforeTransition',
             AbstractEvent::create(
                 'onWorkflowBeforeTransition',
@@ -404,7 +406,7 @@ class Workflow
         $success = $this->updateAssociations($pks, (int) $transition->to_stage_id);
 
         if ($success) {
-            $this->app->getDispatcher()->dispatch(
+            $dispatcher->dispatch(
                 'onWorkflowAfterTransition',
                 AbstractEvent::create(
                     'onWorkflowAfterTransition',

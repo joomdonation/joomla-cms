@@ -106,12 +106,13 @@ class HtmlView extends BaseHtmlView
     {
         $this->setSiteTemplateStyle();
 
-        $app  = Factory::getApplication();
-        $user = $this->getCurrentUser();
+        $app        = Factory::getApplication();
+        $user       = $this->getCurrentUser();
+        $dispatcher = $this->getDispatcher();
 
-        PluginHelper::importPlugin('multifactorauth');
+        PluginHelper::importPlugin('multifactorauth', null, true, $dispatcher);
         $event = new BeforeDisplayMethods($user);
-        $app->getDispatcher()->dispatch($event->getName(), $event);
+        $dispatcher->dispatch($event->getName(), $event);
 
         /** @var CaptiveModel $model */
         $model = $this->getModel();
@@ -163,7 +164,7 @@ class HtmlView extends BaseHtmlView
                 $this->allowEntryBatching = 1;
 
                 $event = new NotifyActionLog('onComUsersCaptiveShowSelect', []);
-                Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+                $dispatcher->dispatch($event->getName(), $event);
                 break;
 
             case 'default':
@@ -177,7 +178,7 @@ class HtmlView extends BaseHtmlView
                         $this->escape($this->record->title),
                     ]
                 );
-                Factory::getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+                $dispatcher->dispatch($event->getName(), $event);
                 break;
         }
 

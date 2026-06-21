@@ -844,8 +844,10 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface, Version
 
         $this->workflowBeforeStageChange();
 
+        $dispatcher = $this->getDispatcher();
+
         // Include the plugins for the change of state event.
-        PluginHelper::importPlugin($this->events_map['featured']);
+        PluginHelper::importPlugin($this->events_map['featured'], null, true, $dispatcher);
 
         // Convert empty strings to null for the query.
         if ($featuredUp === '') {
@@ -865,7 +867,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface, Version
         $table = $this->getTable('Featured', 'Administrator');
 
         // Trigger the before change state event.
-        $eventResult = Factory::getApplication()->getDispatcher()->dispatch(
+        $eventResult = $dispatcher->dispatch(
             $this->event_before_change_featured,
             AbstractEvent::create(
                 $this->event_before_change_featured,
@@ -970,7 +972,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface, Version
         $table->reorder();
 
         // Trigger the change state event.
-        Factory::getApplication()->getDispatcher()->dispatch(
+        $dispatcher->dispatch(
             $this->event_after_change_featured,
             AbstractEvent::create(
                 $this->event_after_change_featured,

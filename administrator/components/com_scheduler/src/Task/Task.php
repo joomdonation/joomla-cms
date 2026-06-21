@@ -222,10 +222,12 @@ class Task implements LoggerAwareInterface
             ]
         );
 
-        PluginHelper::importPlugin('task');
+        $dispatcher = $this->app->getDispatcher();
+
+        PluginHelper::importPlugin('task', null, true, $dispatcher);
 
         try {
-            $this->app->getDispatcher()->dispatch('onExecuteTask', $event);
+            $dispatcher->dispatch('onExecuteTask', $event);
         } catch (\Exception $e) {
             // Suppress the exception for now, we'll throw it again once it's safe
             $this->log(Text::sprintf('COM_SCHEDULER_TASK_ROUTINE_EXCEPTION', $e->getMessage()), 'error');
