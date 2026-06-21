@@ -461,9 +461,11 @@ class Helper
     {
         static $loaded;
 
+        $dispatcher = Factory::getApplication()->getDispatcher();
+
         // Load the content plugins if necessary.
         if (empty($loaded)) {
-            PluginHelper::importPlugin('content');
+            PluginHelper::importPlugin('content', null, true, $dispatcher);
             $loaded = true;
         }
 
@@ -487,17 +489,15 @@ class Helper
         }
 
         // Fire the onContentPrepare event.
-        Factory::getContainer()
-            ->get(DispatcherInterface::class)
-            ->dispatch(
-                'onContentPrepare',
-                new ContentPrepareEvent('onContentPrepare', [
-                    'context' => 'com_finder.indexer',
-                    'subject' => $content,
-                    'params'  => $params,
-                    'page'    => 0,
-                ])
-            );
+        $dispatcher->dispatch(
+            'onContentPrepare',
+            new ContentPrepareEvent('onContentPrepare', [
+                'context' => 'com_finder.indexer',
+                'subject' => $content,
+                'params'  => $params,
+                'page'    => 0,
+            ])
+        );
 
         return $content->text;
     }
