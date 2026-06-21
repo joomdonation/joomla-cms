@@ -336,13 +336,14 @@ abstract class UserHelper
         }
 
         // Get the dispatcher and load the user's plugins.
-        PluginHelper::importPlugin('user');
+        $dispatcher = Factory::getContainer()->get(DispatcherInterface::class);
+        PluginHelper::importPlugin('user', null, true, $dispatcher);
 
         $data     = new \stdClass();
         $data->id = $userId;
 
         // Trigger the data preparation event.
-        Factory::getContainer()->get(DispatcherInterface::class)->dispatch(
+        $dispatcher->dispatch(
             'onContentPrepareData',
             new PrepareDataEvent('onContentPrepareData', [
                 'context' => 'com_users.profile',

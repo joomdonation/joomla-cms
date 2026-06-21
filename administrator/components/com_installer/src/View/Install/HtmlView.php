@@ -47,7 +47,7 @@ class HtmlView extends InstallerViewDefault
 
         $this->paths  = &$paths;
 
-        PluginHelper::importPlugin('installer');
+        PluginHelper::importPlugin('installer', null, true, $this->getDispatcher());
 
         parent::display($tpl);
     }

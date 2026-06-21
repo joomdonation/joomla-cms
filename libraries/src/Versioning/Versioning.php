@@ -113,7 +113,9 @@ class Versioning
         $component = Factory::getApplication()->bootComponent($aliasParts[0]);
 
         if ($component instanceof WorkflowServiceInterface && $component->isWorkflowActive($typeAlias)) {
-            PluginHelper::importPlugin('workflow');
+            $dispatcher = Factory::getApplication()->getDispatcher();
+
+            PluginHelper::importPlugin('workflow', null, true, $dispatcher);
 
             // Pre-processing by observers
             $event = AbstractEvent::create(
@@ -124,7 +126,7 @@ class Versioning
                 ]
             );
 
-            Factory::getApplication()->getDispatcher()->dispatch('onContentVersioningPrepareTable', $event);
+            $dispatcher->dispatch('onContentVersioningPrepareTable', $event);
         }
 
         // Fix for null ordering - set to 0 if null

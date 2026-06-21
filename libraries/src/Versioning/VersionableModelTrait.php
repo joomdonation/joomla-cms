@@ -382,7 +382,8 @@ trait VersionableModelTrait
         $component = Factory::getApplication()->bootComponent($extension);
 
         if ($component instanceof WorkflowServiceInterface && $component->isWorkflowActive($typeAlias)) {
-            PluginHelper::importPlugin('workflow');
+            $dispatcher = $this->getDispatcher();
+            PluginHelper::importPlugin('workflow', null, true, $dispatcher);
 
             // Pre-processing by observers
             $event = AbstractEvent::create(
@@ -393,7 +394,7 @@ trait VersionableModelTrait
                 ]
             );
 
-            $this->getDispatcher()->dispatch('onContentVersioningPrepareTable', $event);
+            $dispatcher->dispatch('onContentVersioningPrepareTable', $event);
         }
 
         // Fix for null ordering - set to 0 if null

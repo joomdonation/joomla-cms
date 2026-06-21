@@ -264,7 +264,7 @@ class ProfileModel extends FormModel
         }
 
         // Load the users plugin group.
-        PluginHelper::importPlugin('user');
+        PluginHelper::importPlugin('user', null, true, $this->getDispatcher());
 
         // Retrieve the user groups so they don't get overwritten
         unset($user->groups);

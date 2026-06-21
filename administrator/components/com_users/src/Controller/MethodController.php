@@ -120,7 +120,7 @@ class MethodController extends BaseControllerAlias implements UserFactoryAwareIn
         $view->setModel($model, true);
 
         $event = new NotifyActionLog('onComUsersControllerMethodBeforeAdd', [$user, $method]);
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         $view->display();
     }
@@ -169,7 +169,7 @@ class MethodController extends BaseControllerAlias implements UserFactoryAwareIn
         $view->setModel($model, true);
 
         $event = new NotifyActionLog('onComUsersControllerMethodBeforeEdit', [$id, $user]);
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         $view->display();
     }
@@ -212,7 +212,7 @@ class MethodController extends BaseControllerAlias implements UserFactoryAwareIn
         $this->setRedirect(Route::_($redirectUrl, false));
 
         $event = new NotifyActionLog('onComUsersControllerMethodAfterRegenerateBackupCodes');
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
     }
 
     /**
@@ -247,7 +247,7 @@ class MethodController extends BaseControllerAlias implements UserFactoryAwareIn
         $message = null;
 
         $event = new NotifyActionLog('onComUsersControllerMethodBeforeDelete', [$id, $user]);
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         try {
             $record->delete();
@@ -314,7 +314,7 @@ class MethodController extends BaseControllerAlias implements UserFactoryAwareIn
         $input  = $this->app->getInput();
 
         $event = new NotifyActionLog('onComUsersControllerMethodBeforeSave', [$id, $user]);
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
 
         try {
             $event         = new SaveSetup($record, $input);

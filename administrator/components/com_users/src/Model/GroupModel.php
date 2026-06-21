@@ -151,7 +151,7 @@ class GroupModel extends AdminModel
     public function save($data)
     {
         // Include the user plugins for events.
-        PluginHelper::importPlugin($this->events_map['save']);
+        PluginHelper::importPlugin($this->events_map['save'], null, true, $this->getDispatcher());
 
         /**
          * Check the super admin permissions for group

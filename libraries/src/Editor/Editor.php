@@ -343,7 +343,7 @@ class Editor implements DispatcherAwareInterface
         $this->_editor->params->loadArray($config);
 
         $this->initialise();
-        PluginHelper::importPlugin('editors-xtd');
+        PluginHelper::importPlugin('editors-xtd', null, true, $this->getDispatcher());
 
         return true;
     }

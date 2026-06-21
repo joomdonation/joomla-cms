@@ -147,13 +147,14 @@ abstract class Mfa
      */
     public static function getMfaMethods(): array
     {
-        PluginHelper::importPlugin('multifactorauth');
+        $dispatcher = Factory::getApplication()->getDispatcher();
+
+        PluginHelper::importPlugin('multifactorauth', null, true, $dispatcher);
 
         if (\is_null(self::$allMFAs)) {
             // Get all the plugin results
             $event = new GetMethod();
-            $temp  = Factory::getApplication()
-                ->getDispatcher()
+            $temp  = $dispatcher
                 ->dispatch($event->getName(), $event)
                 ->getArgument('result', []);
 

@@ -112,7 +112,7 @@ class Authentication
         $this->setDispatcher($dispatcher);
         $this->pluginType = $pluginType;
 
-        $isLoaded = PluginHelper::importPlugin($this->pluginType);
+        $isLoaded = PluginHelper::importPlugin($this->pluginType, null, true, $dispatcher);
 
         if (!$isLoaded) {
             Log::add(Text::_('JLIB_USER_ERROR_AUTHENTICATION_LIBRARIES'), Log::WARNING, 'jerror');

@@ -34,10 +34,11 @@ class SampledataHelper
      */
     public function getSampledataList()
     {
-        PluginHelper::importPlugin('sampledata');
+        $dispatcher = Factory::getApplication()->getDispatcher();
 
-        return Factory::getApplication()
-            ->getDispatcher()
+        PluginHelper::importPlugin('sampledata', null, true, $dispatcher);
+
+        return $dispatcher
             ->dispatch(
                 'onSampledataGetOverview',
                 AbstractEvent::create(

@@ -146,7 +146,7 @@ class CaptiveController extends BaseController implements UserFactoryAwareInterf
 
         if (empty($record)) {
             $event = new NotifyActionLog('onComUsersCaptiveValidateInvalidMethod');
-            $this->app->getDispatcher()->dispatch($event->getName(), $event);
+            $this->getDispatcher()->dispatch($event->getName(), $event);
 
             throw new \RuntimeException(Text::_('COM_USERS_MFA_INVALID_METHOD'), 500);
         }
@@ -158,7 +158,7 @@ class CaptiveController extends BaseController implements UserFactoryAwareInterf
             $this->setRedirect($captiveURL, $message, 'error');
 
             $event = new NotifyActionLog('onComUsersCaptiveValidateTryLimitReached');
-            $this->app->getDispatcher()->dispatch($event->getName(), $event);
+            $this->getDispatcher()->dispatch($event->getName(), $event);
 
             return;
         }
@@ -211,7 +211,7 @@ class CaptiveController extends BaseController implements UserFactoryAwareInterf
             $this->setRedirect($captiveURL, $message, 'error');
 
             $event = new NotifyActionLog('onComUsersCaptiveValidateFailed', [$record->title]);
-            $this->app->getDispatcher()->dispatch($event->getName(), $event);
+            $this->getDispatcher()->dispatch($event->getName(), $event);
 
             return;
         }
@@ -240,6 +240,6 @@ class CaptiveController extends BaseController implements UserFactoryAwareInterf
         $this->setRedirect($returnUrl);
 
         $event = new NotifyActionLog('onComUsersCaptiveValidateSuccess', [$record->title]);
-        $this->app->getDispatcher()->dispatch($event->getName(), $event);
+        $this->getDispatcher()->dispatch($event->getName(), $event);
     }
 }

@@ -277,15 +277,16 @@ trait AjaxHandlerLogin
      */
     private function processLoginFailure(AuthenticationResponse $response): bool
     {
+        $dispatcher = $this->getApplication()->getDispatcher();
         // Import the user plugin group.
-        PluginHelper::importPlugin('user');
+        PluginHelper::importPlugin('user', null, true, $dispatcher);
 
         // Trigger onUserLoginFailure Event.
         Log::add('Calling onUserLoginFailure plugin event', Log::INFO, 'plg_system_webauthn');
 
         $eventClassName = self::getEventClassByEventName('onUserLoginFailure');
         $event          = new $eventClassName('onUserLoginFailure', [(array) $response]);
-        $this->getApplication()->getDispatcher()->dispatch($event->getName(), $event);
+        $dispatcher->dispatch($event->getName(), $event);
 
         // If status is success, any error will have been raised by the user plugin
         $expectedStatus = Authentication::STATUS_SUCCESS;

@@ -50,11 +50,13 @@ class DataField extends AbstractStatsField
      */
     protected function getLayoutData()
     {
-        $data       = parent::getLayoutData();
+        $data = parent::getLayoutData();
 
-        PluginHelper::importPlugin('system', 'stats');
+        $dispatcher = Factory::getApplication()->getDispatcher();
 
-        $result = Factory::getApplication()->getDispatcher()->dispatch(
+        PluginHelper::importPlugin('system', 'stats', true, $dispatcher);
+
+        $result = $dispatcher->dispatch(
             'onGetStatsData',
             new GetStatsDataEvent('onGetStatsData', ['context' => 'stats.field.data'])
         )->getArgument('result', []);
