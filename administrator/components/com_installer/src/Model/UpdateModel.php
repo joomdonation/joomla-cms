@@ -406,7 +406,7 @@ class UpdateModel extends ListModel
     private function install($update)
     {
         // Load overrides plugin.
-        PluginHelper::importPlugin('installer');
+        PluginHelper::importPlugin('installer', null, true, $this->getDispatcher());
 
         $app = Factory::getApplication();
 
@@ -568,7 +568,7 @@ class UpdateModel extends ListModel
                 // If we have a plugin, we can use the plugin trigger "onInstallerBeforePackageDownload"
                 // But we should make sure, that our plugin is loaded, so we don't need a second "installer" plugin
                 $cname = str_replace('plg_', '', $table->element);
-                PluginHelper::importPlugin($table->folder, $cname);
+                PluginHelper::importPlugin($table->folder, $cname, true, $this->getDispatcher());
                 break;
         }
     }

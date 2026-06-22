@@ -61,7 +61,8 @@ trait ProviderManagerHelperTrait
             // Fire the event to get the results
             $eventParameters = ['context' => 'AdapterManager', 'providerManager' => new ProviderManager()];
             $event           = new MediaProviderEvent('onSetupProviders', $eventParameters);
-            PluginHelper::importPlugin('filesystem');
+            $dispatcher      = Factory::getContainer()->get(DispatcherInterface::class);
+            PluginHelper::importPlugin('filesystem', null, true, $dispatcher);
             Factory::getContainer()->get(DispatcherInterface::class)->dispatch('onSetupProviders', $event);
             $this->providerManager = $event->getProviderManager();
         }

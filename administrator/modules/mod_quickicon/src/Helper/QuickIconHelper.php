@@ -381,10 +381,12 @@ class QuickIconHelper
 
                 $this->buttons[$key][] = $tmp;
             }
-            PluginHelper::importPlugin('quickicon');
 
-            $arrays = (array) Factory::getContainer()
-                ->get(DispatcherInterface::class)
+            $dispatcher = Factory::getContainer()->get(DispatcherInterface::class);
+
+            PluginHelper::importPlugin('quickicon', null, true, $dispatcher);
+
+            $arrays = (array) $dispatcher
                 ->dispatch(
                     'onGetIcons',
                     new QuickIconsEvent('onGetIcons', ['context' => $context])

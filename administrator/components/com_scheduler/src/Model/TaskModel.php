@@ -867,7 +867,7 @@ class TaskModel extends AdminModel
     protected function preprocessForm(Form $form, $data, $group = 'content'): void
     {
         // Load the 'task' plugin group
-        PluginHelper::importPlugin('task');
+        PluginHelper::importPlugin('task', null, true, $this->getDispatcher());
 
         // Let the parent method take over
         parent::preprocessForm($form, $data, $group);

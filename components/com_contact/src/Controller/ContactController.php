@@ -148,7 +148,8 @@ class ContactController extends FormController implements UserFactoryAwareInterf
         }
 
         // Contact plugins
-        PluginHelper::importPlugin('contact');
+        $dispatcher = $this->getDispatcher();
+        PluginHelper::importPlugin('contact', null, true, $dispatcher);
 
         // Validate the posted data.
         $form = $model->getForm();
@@ -178,7 +179,7 @@ class ContactController extends FormController implements UserFactoryAwareInterf
         }
 
         // Validation succeeded, continue with custom handlers
-        $results = $this->getDispatcher()->dispatch('onValidateContact', new ValidateContactEvent('onValidateContact', [
+        $results = $dispatcher->dispatch('onValidateContact', new ValidateContactEvent('onValidateContact', [
             'subject' => $contact,
             'data'    => &$data, // @todo: Remove reference in Joomla 6, @deprecated: Data modification onValidateContact is not allowed, use onSubmitContact instead
         ]))->getArgument('result', []);
@@ -201,7 +202,7 @@ class ContactController extends FormController implements UserFactoryAwareInterf
         }
 
         // Passed Validation: Process the contact plugins to integrate with other applications
-        $event = $this->getDispatcher()->dispatch('onSubmitContact', new SubmitContactEvent('onSubmitContact', [
+        $event = $dispatcher->dispatch('onSubmitContact', new SubmitContactEvent('onSubmitContact', [
             'subject' => $contact,
             'data'    => &$data, // @todo: Remove reference in Joomla 6, see SubmitContactEvent::__constructor()
         ]));
